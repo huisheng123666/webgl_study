@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../lib/index.js"></script>
+  <style>
+    canvas {
+      border: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas" width="400" height="400"></canvas>
+
+<script>
+  const ctx = document.getElementById('canvas')
+  const gl = ctx.getContext('webgl')
+
+  const VERTEX_SHADER_SOURCE = `
+            attribute vec4 aPosition;
+            void main() {
+                gl_Position = aPosition;
+                gl_PointSize = 30.0;
+            }
+        ` // 顶点着色器，指定位置
+  // gl_Position vec4(0.0, 0.0, 0.0, 1.0); x, y, z, w齐次坐标(x/w, y/w, z/w, w)
+
+  const FRAGMENT_SHADER_SOURCE = `
+            void main() {
+                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            }
+        ` // 片元着色器，指定颜色
+  // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); r, g, b, a
+
+  const program = initShader(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE)
+
+  const aPosition = gl.getAttribLocation(program, 'aPosition')
+
+  // gl.vertexAttrib4f(aPosition, 0.5, 0.5, 0.0, 1.0)
+  gl.vertexAttrib3f(aPosition, 0.5, 0.5, 0.0)
+
+  let x = 0.0
+  function ani() {
+    window.requestAnimationFrame(() => {
+      x += 0.005
+      if (x > 1.0) {
+        x = 0.0
+      }
+      gl.vertexAttrib1f(aPosition, x)
+      gl.drawArrays(gl.POINTS, 0, 1)
+      ani()
+    })
+  }
+  ani()
+  // 执行绘制
+  // 要绘制的图形是什么，从哪开始，使用几个点
+</script>
+</body>
+</html>
